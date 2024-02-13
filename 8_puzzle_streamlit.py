@@ -39,7 +39,7 @@ def calculate_heuristic(state, goal):  # number of incorrect tiles
 
 def solve_puzzle(state, goal, steps, path=[], depth=0):  # recursively solve the puzzle and not pass the depth limit
     if state == goal:
-        steps.append(('Goal reached', state, []))
+        steps.append(('Goal reached', state, [], depth))
         return True
     if depth == DEPTH:
         return False  
@@ -51,24 +51,24 @@ def solve_puzzle(state, goal, steps, path=[], depth=0):  # recursively solve the
             heuristic = calculate_heuristic(new_state, goal)
             possible_moves.append((heuristic, new_state, direction))
     
-    # Sort
+    # Sort by heuristic
     possible_moves.sort(key=lambda x: x[0])
 
     for heuristic, new_state, direction in possible_moves:
         path.append((state, direction))
         # Filter out options leading back to previous states
         other_options = [(h, s, d) for h, s, d in possible_moves if s not in [p[0] for p in path] and d != direction]
-        steps.append((f'Move: {direction}, Heuristic: {heuristic}', new_state, other_options))
+        steps.append((f'Move: {direction}, Heuristic: {heuristic}, Depth: {depth + 1}', new_state, other_options, depth))
 
         if solve_puzzle(new_state, goal, steps, path, depth + 1):
             return True
         else:
             path.pop()
-            steps.append((f'Backtracking from {direction}', state, []))
+            steps.append((f'Backtracking from {direction}, Depth: {depth}', state, [], depth))
 
     return False
 
-st.title('8 Puzzle Solver with Heuristic Backtracking')
+st.title('Team D - Heuristic and Backtracking 8-Puzzle Solver')
 
 initial_state_input = st.text_input('Enter Initial State:', '6,2,3,8,5,*,4,1,7').split(',')
 goal_state_input = st.text_input('Enter Goal State:', '8,6,2,4,5,3,*,1,7').split(',')
@@ -78,10 +78,10 @@ goal_state_matrix = np.array(goal_state_input).reshape(SIZE, SIZE).tolist()
 
 if st.button('Solve Puzzle'): # button to solve the puzzle
     initial_heuristic = calculate_heuristic(initial_state_matrix, goal_state_matrix)
-    steps = [(f"Initial state, Heuristic: {initial_heuristic}", initial_state_matrix, [])]
+    steps = [(f"Initial state, Heuristic: {initial_heuristic}, Depth: 0", initial_state_matrix, [], 0)]
 
     if solve_puzzle(initial_state_matrix, goal_state_matrix, steps): # solve the puzzle view
-        for description, step, other_options in steps[:-1]:
+        for description, step, other_options, depth in steps[:-1]:
             col1, col2 = st.columns([2, 1])
             with col1:
                 st.text(description)
@@ -94,8 +94,8 @@ if st.button('Solve Puzzle'): # button to solve the puzzle
                         st.write(np.array(s))
         st.success(steps[-1][0])
     else:
-        st.error('No solution found within the depth limit. Displaying the first 10 steps attempted:') # for initial state 2
-        for description, step, other_options in steps[:11]:
+        st.error('No solution found within the depth limit. Displaying the first 10 steps attempted:')
+        for description, step, other_options, depth in steps[:11]:
             col1, col2 = st.columns([2, 1])
             with col1:
                 st.text(description)
@@ -106,11 +106,6 @@ if st.button('Solve Puzzle'): # button to solve the puzzle
                     for h, s, d in other_options:
                         st.text(f"Move: {d}, Heuristic: {h}")
                         st.write(np.array(s))
-
-
-
-
-
 
 # Copy and paste these, dont know how to get it show automitcally
 

@@ -3,7 +3,8 @@ import numpy as np
 from copy import deepcopy
 
 SIZE = 3
-DEPTH = 5
+DEPTH = 5 # change if you want to go deeper, solve easier isntead of backtracking
+
 
 MOVES = { # moves with directions
     'S': (1, 0),

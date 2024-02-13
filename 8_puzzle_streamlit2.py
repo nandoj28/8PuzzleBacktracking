@@ -43,69 +43,69 @@ def calculate_heuristic(state, goal):
                     if state[x][y] != goal[x][y] and state[x][y] != '*')
     return incorrect
 
-def solve_puzzle(state, goal, steps, path=[], depth=0):
-    """Solve the puzzle using backtracking with heuristic guidance, explicitly showing backtracking."""
+def solve_puzzle(state, goal, steps, path=[], depth=0, max_steps=10):
+    """Solve the puzzle using backtracking, showing steps accurately."""
+    if depth == 0 and steps:
+        # Reset steps list on the first call, except for the initial state already added
+        steps.clear()
+        steps.append(("Initial state", state))
+
     if state == goal:
         steps.append(('Goal reached', state))
         return True
-    if depth == DEPTH:
-        return False  # Stop the recursion if the depth limit is reached
-    
-    possible_moves = []
+
+    if depth >= DEPTH or len(steps) >= max_steps:
+        # Exit if depth exceeds limit or enough steps are taken
+        return False
+
     for direction in ['S', 'E', 'W', 'N']:
-        new_state, _ = perform_move(state, direction)
-        if new_state and new_state not in path:  # Avoid revisiting states
+        if len(steps) >= max_steps:
+            # Ensure not to exceed the step limit
+            break
+
+        new_state, move_made = perform_move(state, direction)
+        if new_state and new_state not in path:  # Avoid cycles by not revisiting states
             heuristic = calculate_heuristic(new_state, goal)
-            possible_moves.append((heuristic, new_state, direction))
-    
-    # Sort possible moves based on heuristic value
-    possible_moves.sort(key=lambda x: x[0])
+            if len(steps) < max_steps:  # Check to ensure within step limit before adding
+                steps.append((f"Move: {direction} (Heuristic: {heuristic})", new_state))
+            
+            if solve_puzzle(new_state, goal, steps, path + [state], depth + 1, max_steps):
+                return True
+            elif len(steps) < max_steps:
+                # Note backtracking only if within steps limit and if the move didn't succeed
+                steps.append((f'Backtracking from {direction}', state))
 
-    for heuristic, new_state, direction in possible_moves:
-        # Append current state and move to path before proceeding
-        path.append((state, direction))
-        steps.append((f'Move: {direction}, Heuristic: {heuristic}', new_state))
-
-        if solve_puzzle(new_state, goal, steps, path, depth + 1):
-            return True
-        else:
-            # Backtracking: remove the last move and state from path if it leads to a dead-end
-            path.pop()
-            steps.append((f'Backtracking from {direction}', state))
-
-            # Check if the heuristic got worse, and if so, break the loop and backtrack
-            if len(path) > 0 and len(steps) > 1 and heuristic >= calculate_heuristic(path[-1][0], goal):
-
-                break
-
+    # If no solution found within the depth or steps limit, ensure to report stopping reason
+    if depth == 0 and len(steps) == 1:  # Only the initial state was added, and no solution found
+        steps.append(('Solution not found within step limit', state))
     return False
+
 
 
 st.title('8 Puzzle Solver with Heuristic Backtracking')
 
-# Inputs for initial and goal states
-initial_state_input = st.text_input('Enter Initial State:', '6,2,3,8,5,*,4,1,7').split(',')
+initial_state_input = st.text_input('Enter Initial State:', '6,5,3,8,2,7,1,4,*').split(',')
 goal_state_input = st.text_input('Enter Goal State:', '8,6,2,4,5,3,*,1,7').split(',')
 
-# Conversion to matrix form
 initial_state_matrix = np.array(initial_state_input).reshape(SIZE, SIZE).tolist()
 goal_state_matrix = np.array(goal_state_input).reshape(SIZE, SIZE).tolist()
 
-# Button to start the solving process
 if st.button('Solve Puzzle'):
-    # Calculate heuristic for the initial state
-    initial_heuristic = calculate_heuristic(initial_state_matrix, goal_state_matrix)
-    steps = [(f"Initial state, Heuristic: {initial_heuristic}", initial_state_matrix)]
+    steps = [("Initial state", initial_state_matrix)]  # Start with the initial state description
 
-    # Start solving the puzzle
-    if solve_puzzle(initial_state_matrix, goal_state_matrix, steps):
-        for description, step in steps[:-1]:  # Display all but the final success message
-            st.text(description)
-            st.write(np.array(step))
-        st.success(steps[-1][0])  # Display the final success or failure message
+    solve_puzzle(initial_state_matrix, goal_state_matrix, steps)
+
+    # Ensure to display exactly up to the first 10 steps
+    for description, step in steps[:50]:
+        st.text(description)
+        st.write(np.array(step))
+
+    if len(steps) > 50:
+        st.warning("Displayed the first 10 steps. The solution process exceeded this limit.")
+    elif steps[-1][0] == 'Goal reached':
+        st.success("Puzzle solved within the first 10 steps!")
     else:
-        st.error('No solution found or depth limit reached.')
-
+        st.error("Puzzle not solved within the first 10 steps.")
 
 
 # Copy and paste these, dont know how to get it show automitcally

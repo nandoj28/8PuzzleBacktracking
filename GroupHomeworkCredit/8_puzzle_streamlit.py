@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from copy import deepcopy 
+from copy import deepcopy # 
 
 SIZE = 3
 DEPTH = 5  # change if you want to go deeper, solve easier instead of backtracking
@@ -18,6 +18,7 @@ def find_blank_position(state):  # finds where the blank tile is
             if tile == '*':
                 return (i, j)
     return None
+
 
 def is_valid_move(x, y):  # can you move?
     return 0 <= x < SIZE and 0 <= y < SIZE

@@ -1,0 +1,1 @@
+# Read me for task 2. AI Homework

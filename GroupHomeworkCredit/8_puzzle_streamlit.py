@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from copy import deepcopy
+from copy import deepcopy 
 
 SIZE = 3
 DEPTH = 5  # change if you want to go deeper, solve easier instead of backtracking
@@ -117,3 +117,6 @@ if st.button('Solve Puzzle'): # button to solve the puzzle
         
 # initial state 2
 # 6,5,3,8,2,7,1,4,*
+                        
+# Just show the difference with depth, change the depth
+# 6,2,3,8,5,7,4,1,*

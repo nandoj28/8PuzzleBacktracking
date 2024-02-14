@@ -109,14 +109,14 @@ if st.button('Solve Puzzle'): # button to solve the puzzle
 
 # Copy and paste these, dont know how to get it show automitcally
 
-# initial state 1
+# Initial state 1
 # 6,2,3,8,5,*,4,1,7
-
-# goal state
-# 8,6,2,4,5,3,*,1,7
-        
-# initial state 2
-# 6,5,3,8,2,7,1,4,*
                         
-# show what happens when depth is increased when
+# Initial state 2
+# 6,5,3,8,2,7,1,4,*
+
+# Goal state
+# 8,6,2,4,5,3,*,1,7
+                       
+# Show what happens when depth is increased when, change depth to 6 to show it works. Another initial state.
 # 6,2,3,8,5,7,4,1,*

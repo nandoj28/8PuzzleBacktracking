@@ -117,3 +117,6 @@ if st.button('Solve Puzzle'): # button to solve the puzzle
         
 # initial state 2
 # 6,5,3,8,2,7,1,4,*
+                        
+# show what happens when depth is increased when
+# 6,2,3,8,5,7,4,1,*

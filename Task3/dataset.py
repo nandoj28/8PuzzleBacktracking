@@ -15,11 +15,11 @@ labels = {
     "9": "Ankle boot"
 }
 
-class Dataset:
+class DataClean:
     def __init__(self):
         self.train_path = "C:/Users/recinosf/PersonalCode/AIAssignments/Task3/train.csv"
         self.test_path = "C:/Users/recinosf/PersonalCode/AIAssignments/Task3/test.csv"
-        self.label_names = labels  # Directly use the provided labels dictionary
+        self.label_names = labels
 
     def load_data(self, path):
         return pd.read_csv(path)

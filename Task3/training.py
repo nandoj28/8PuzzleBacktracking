@@ -1,41 +1,56 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 import pandas as pd
 import numpy as np
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 from sklearn.model_selection import train_test_split
+from torchvision import transforms
 
-# Assuming the Dataset class from your previous message is saved in a file named dataset_class.py
-from dataset import Dataset
+from dataset import DataClean
 
-class FashionMNISTDataset(Dataset):
-    """PyTorch Dataset class for Fashion MNIST"""
-    def __init__(self, images, labels):
+class setUp(DataClean):
+    def __init__(self, images, labels, transform=None):
         self.X = images
         self.y = labels
+        self.transform = transform
 
     def __len__(self):
         return len(self.X)
 
     def __getitem__(self, idx):
-        return torch.tensor(self.X.iloc[idx].values, dtype=torch.float32), torch.tensor(self.y.iloc[idx], dtype=torch.long)
 
-class SimpleNN(nn.Module):
-    """Simple Neural Network with one hidden layer"""
-    def __init__(self):
-        super(SimpleNN, self).__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28*28, 128),
-            nn.ReLU(),
-            nn.Linear(128, 10),
-        )
+        image = self.X.iloc[idx].values.astype(np.float32).reshape(28, 28)
+        if self.transform:
+            image = self.transform(image)
+        label = self.y.iloc[idx]
+        return image, label
 
+class SimpleCNN(nn.Module):
+    def __init__(self, num_classes=10):
+        super(SimpleCNN, self).__init__()
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=2, padding=2)  # Increased from 1 to 2
+        self.maxpool1 = nn.MaxPool2d(kernel_size=2, stride=4)  # Increased from 2 to 4
+        self.fc1 = nn.Linear(256, 64)  # Reduced from 128 to 64
+        self.fc2 = nn.Linear(64, num_classes)  # Reduced from 128 to 64
+        
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        x = self.maxpool1(torch.relu(self.conv1(x)))
+        
+        # Since we removed conv2 and maxpool2, we directly proceed to flattening and the dense layers
+        x = x.view(x.size(0), -1)
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+def calculate_metrics(pred, targets):
+    pred = torch.argmax(pred, dim=1).numpy()
+    targets = targets.numpy()
+    accuracy = accuracy_score(targets, pred)
+    precision = precision_score(targets, pred, average='macro')
+    recall = recall_score(targets, pred, average='macro')
+    return accuracy, precision, recall
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -72,33 +87,34 @@ def test(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 # Load and preprocess data
-fashion_mnist = Dataset()
+fashion_mnist = DataClean()
 X_train, y_train = fashion_mnist.get_train_data()
 X_test, y_test = fashion_mnist.get_test_data()
 
 # Split training data for validation
 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2)
 
-# Create PyTorch datasets
-train_dataset = FashionMNISTDataset(X_train, y_train)
-val_dataset = FashionMNISTDataset(X_val, y_val)
-test_dataset = FashionMNISTDataset(X_test, y_test)
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))
+])
 
-# DataLoader
+# Adjustments for using the transform
+train_dataset = setUp(X_train, y_train, transform=transform)
+val_dataset = setUp(X_val, y_val, transform=transform)
+test_dataset = setUp(X_test, y_test, transform=transform)
+
 train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=64, shuffle=True)
 test_dataloader = DataLoader(test_dataset, batch_size=64, shuffle=True)
 
-# Setting up the device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Creating model, loss function, and optimizer
-model = SimpleNN().to(device)
+model = SimpleCNN(num_classes=10).to(device)
 loss_fn = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Training the model
-epochs = 5
+epochs = 2
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train(train_dataloader, model, loss_fn, optimizer)

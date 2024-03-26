@@ -1,8 +1,8 @@
 # import tensorflow as tf
 import keras as kers
-from dataset import Dataset  # Make sure your class is in a file named dataset_class.py
+from dataClean import DataClean  # Make sure your class is in a file named dataset_class.py
 
-# Ensure the Dataset class uses the labels dictionary correctly as discussed previously.
+# Ensure the DataClean class uses the labels dictionary correctly as discussed previously.
 
 def create_model(input_shape, num_classes):
     model = kers.models.Sequential([
@@ -18,10 +18,10 @@ def create_model(input_shape, num_classes):
     return model
 
 def main():
-    # Initialize dataset
-    dataset = Dataset()
-    X_train, y_train = dataset.get_train_data()
-    X_test, y_test = dataset.get_test_data()
+    # Initialize dataClean
+    dataClean = DataClean()
+    X_train, y_train = dataClean.get_train_data()
+    X_test, y_test = dataClean.get_test_data()
     
     # Model configuration
     input_shape = (28, 28)  # MNIST Fashion images are 28x28

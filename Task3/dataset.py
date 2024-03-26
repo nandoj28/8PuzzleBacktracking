@@ -1,13 +1,25 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import json
+
+labels = {
+    "0": "T-shirt/top",
+    "1": "Trouser",
+    "2": "Pullover",
+    "3": "Dress",
+    "4": "Coat",
+    "5": "Sandal",
+    "6": "Shirt",
+    "7": "Sneaker",
+    "8": "Bag",
+    "9": "Ankle boot"
+}
 
 class Dataset:
     def __init__(self):
-        self.train_path = "C:/Users/Ferna/AIAssignments/train.csv"
-        self.test_path = "C:/Users/Ferna/AIAssignments/test.csv"
-        self.label_names = self.load_label_names()
+        self.train_path = "C:/Users/recinosf/PersonalCode/AIAssignments/Task3/train.csv"
+        self.test_path = "C:/Users/recinosf/PersonalCode/AIAssignments/Task3/test.csv"
+        self.label_names = labels  # Directly use the provided labels dictionary
 
     def load_data(self, path):
         return pd.read_csv(path)
@@ -33,12 +45,6 @@ class Dataset:
         X, y = self.split_data(test_data)
         return X, y
     
-    def load_label_names(self):
-        # Load label names from config.json
-        with open("C:/Users/Ferna/AIAssignments/Task3/config.json", "r") as file:
-            label_names = json.load(file)
-        return label_names
-    
     def print_random_image(self):
         train_data_pic = self.load_data(self.train_path)
         random_index = np.random.randint(train_data_pic.shape[0])
@@ -47,7 +53,6 @@ class Dataset:
         label_index = train_data_pic.iloc[random_index, 0]
         label_name = self.label_names[str(label_index)]
         plt.imshow(image, cmap='gray', interpolation='nearest')
-        plt.title(f'Label: {label_name}')
+        plt.title(f'{label_name}')
         plt.axis('off')
         plt.show()
-    

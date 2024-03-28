@@ -42,6 +42,7 @@ class SimpleCNN(nn.Module):
         x = self.fc2(x) 
         return x
 
+# some help of chat gpt to create plots and print metrics
 class ModelTrainer:
     def __init__(self, model, loss_fn, optimizer, device, dataClean):
         self.model = model
@@ -125,36 +126,3 @@ class ModelTrainer:
         plt.xlabel("Predicted label")
         plt.show()
     
-    # def analyze_results(self, dataloader):
-    #     self.model.eval()
-    #     all_preds = []
-    #     all_targets = []
-    #     with torch.no_grad():
-    #         for X, y in dataloader:
-    #             X, y = X.to(self.device), y.to(self.device)
-    #             preds = self.model(X)
-    #             all_preds.extend(torch.argmax(preds, dim=1).numpy())
-    #             all_targets.extend(y.numpy())
-        
-    #     accuracy = accuracy_score(all_targets, all_preds)
-    #     precision = precision_score(all_targets, all_preds, average=None)  # Precision for each class
-    #     recall = recall_score(all_targets, all_preds, average=None)  # Recall for each class
-    #     f2_score = fbeta_score(all_targets, all_preds, beta=2, average=None)  # F2 score for each class
-        
-    #     # Identify the class with the lowest F2 score
-    #     lowest_f2_index = np.argmin(f2_score)
-    #     print(f"Lowest F2 Score Class: {lowest_f2_index}, F2 Score: {f2_score[lowest_f2_index]}")
-    #     print(f"Accuracy: {accuracy}")
-    #     print(f"Precision: {precision}")
-    #     print(f"Recall: {recall}")
-        
-    #     # Plot the confusion matrix
-    #     cm = confusion_matrix(all_targets, all_preds)
-    #     plt.figure(figsize=(10, 7))
-    #     sns.heatmap(cm, annot=True, fmt="d")
-    #     plt.title("Confusion Matrix")
-    #     plt.ylabel("Actual")
-    #     plt.xlabel("Predicted")
-    #     plt.show()
-
-        

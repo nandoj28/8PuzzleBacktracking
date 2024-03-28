@@ -2,24 +2,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-labels = {
-    "0": "T-shirt/top",
-    "1": "Trouser",
-    "2": "Pullover",
-    "3": "Dress",
-    "4": "Coat",
-    "5": "Sandal",
-    "6": "Shirt",
-    "7": "Sneaker",
-    "8": "Bag",
-    "9": "Ankle boot"
-}
 
 class DataClean:
     def __init__(self):
         self.train_path = "C:/Users/ferna/AIAssignments/train.csv"
         self.test_path = "C:/Users/ferna/AIAssignments/test.csv"
-        self.label_names = labels
+        self.label_names = {
+                    "0": "T-shirt/top",
+                    "1": "Trouser",
+                    "2": "Pullover",
+                    "3": "Dress",
+                    "4": "Coat",
+                    "5": "Sandal",
+                    "6": "Shirt",
+                    "7": "Sneaker",
+                    "8": "Bag",
+                    "9": "Ankle boot"
+                }
 
     def load_data(self, path):
         return pd.read_csv(path)

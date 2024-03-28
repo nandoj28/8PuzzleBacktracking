@@ -5,8 +5,10 @@ import numpy as np
 
 class DataClean:
     def __init__(self):
-        self.train_path = "C:/Users/ferna/AIAssignments/train.csv"
-        self.test_path = "C:/Users/ferna/AIAssignments/test.csv"
+        # self.train_path = "C:/Users/ferna/AIAssignments/train.csv"
+        # self.test_path = "C:/Users/ferna/AIAssignments/test.csv"
+        self.train_path = "/content/train.csv"
+        self.test_path = "/content/test.csv"
         self.label_names = {
                     "0": "T-shirt/top",
                     "1": "Trouser",
